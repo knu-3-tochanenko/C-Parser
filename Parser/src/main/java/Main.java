@@ -2,7 +2,19 @@ import java.util.Vector;
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Init");
+        Vector<Token> tokens = new Vector<>();
+
+        fillTokens(tokens);
+
+        Parser parser = new Parser();
+        Node root;
+        try {
+            root = parser.parse(tokens);
+        } catch (Exception e) {
+            System.out.println("\n----------------------------------------------");
+            System.out.println(e.toString());
+            System.out.println("----------------------------------------------");
+        }
     }
 
     private static void fillTokens(Vector<Token> tokens) {
