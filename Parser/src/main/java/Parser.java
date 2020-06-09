@@ -70,6 +70,51 @@ public class Parser {
         return declarationNode;
     }
 
+    private Node parseStatement(Vector<Token> tokens) throws Exception {
+        switch (tokens.elementAt(position).content()) {
+            case "return":
+            case "if":
+                assertToken(tokens.elementAt(position), "if");
+                assertToken(tokens.elementAt(position + 1), "(");
+                position += 2;
+                Node ifNode = new Node("if");
+                ifNode.addChild(parseExpression(tokens));
+                assertToken(tokens.elementAt(position), ")");
+                position++;
+                ifNode.addChild(parseStatement(tokens));
+                if (tokens.elementAt(position).content().equals("else")) {
+                    position++;
+                    ifNode.addChild(parseStatement(tokens));
+                }
+
+                return ifNode;
+            case "for":
+
+            case "do":
+
+            case "while":
+
+            case "{":
+                Node blockNode = new Node("block");
+                position++;
+                while (!tokens.elementAt(position).content().equals("}")) {
+                    blockNode.addChild(parseBlockItem(tokens));
+                }
+                assertToken(tokens.elementAt(position), "}");
+                position++;
+                return blockNode;
+
+            case ";":
+                return new Node(noStatement);
+
+            default:
+                Node temp = parseExpression(tokens);
+                assertToken(tokens.elementAt(position), ";");
+                position++;
+                return temp;
+        }
+    }
+
     private Node parseExpression(Vector<Token> tokens) throws Exception {
         if (tokens.elementAt(position).isIdentifier() && tokens.elementAt(position + 1).content().equals("=")) {
             Node assignmentNode = new Node("=");
