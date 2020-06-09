@@ -37,6 +37,7 @@ public class Parser {
         while (!tokens.elementAt(position).content().equals("}")) {
             res.addChild(parseBlockItem(tokens));
         }
+        assertToken(tokens.elementAt(position++), "}");
         return res;
     }
 
@@ -48,6 +49,36 @@ public class Parser {
             return declarationNode;
         } else {
             return parseStatement(tokens);
+        }
+    }
+
+    private Node parseDeclaration(Vector<Token> tokens) throws Exception {
+        if (!tokens.elementAt(position).isType())
+            throw new Exception("type expected");
+        if (!tokens.elementAt(position + 1).isIdentifier())
+            throw new Exception("identifier expected");
+
+        Node declarationNode = new Node("declaration");
+        declarationNode.addChild(new Node(String.format("variable name: %s", tokens.elementAt(position + 1).content())));
+        if (tokens.elementAt(position + 2).content().equals("=")) {
+            position += 3;
+            declarationNode.addChild(parseExpression(tokens));
+        } else {
+            position += 2;
+        }
+
+        return declarationNode;
+    }
+
+    private Node parseExpression(Vector<Token> tokens) throws Exception {
+        if (tokens.elementAt(position).isIdentifier() && tokens.elementAt(position + 1).content().equals("=")) {
+            Node assignmentNode = new Node("=");
+            assignmentNode.addChild(new Node(String.format("id: %s", tokens.elementAt(position).content())));
+            position += 2;
+            assignmentNode.addChild(parseExpression(tokens));
+            return assignmentNode;
+        } else {
+            return parseCompareExpression(tokens);
         }
     }
 
