@@ -148,4 +148,20 @@ public class Parser {
         }
         return parseFactor(tokens);
     }
+
+    private Node parseFactor(Vector<Token> tokens) throws Exception {
+        if (tokens.elementAt(position).content().equals("(")) {
+            position++;
+            Node bracketsNode = new Node("brackets");
+            bracketsNode.addChild(parseExpression(tokens));
+            assertToken(tokens.elementAt(position), ")");
+            position++;
+            return bracketsNode;
+        } else if (tokens.elementAt(position).isLiteral()) {
+            return new Node(String.format("literal: %s", tokens.elementAt(position++).content()));
+        } else if (tokens.elementAt(position).isIdentifier()) {
+            return new Node(String.format("id: %s", tokens.elementAt(position++).content()));
+        }
+        throw new Exception(String.format("expression expected but got token %d with value %s", position, tokens.elementAt(position).content()));
+    }
 }
