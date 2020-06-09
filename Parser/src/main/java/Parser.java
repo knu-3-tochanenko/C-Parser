@@ -14,8 +14,41 @@ public class Parser {
     }
 
     private Node parseProgram(Vector<Token> tokens) throws Exception {
-        // TODO
-        return null;
+        Node res = new Node("program");
+        while (position < tokens.size()) {
+            res.addChild(parseFunctionDeclaration(tokens));
+        }
+        return res;
+    }
+
+    private Node parseFunctionDeclaration(Vector<Token> tokens) throws Exception {
+        if (!tokens.get(position).isType()) {
+            throw new Exception("function type expected");
+        }
+        if (!tokens.get(position + 1).isIdentifier()) {
+            throw new Exception("function name expected");
+        }
+        assertToken(tokens.get(position++), "int");
+        assertToken(tokens.get(position++), "main");
+        assertToken(tokens.get(position++), "(");
+        assertToken(tokens.get(position++), ")");
+        assertToken(tokens.get(position++), "{");
+        Node res = new Node("main function");
+        while (!tokens.elementAt(position).content().equals("}")) {
+            res.addChild(parseBlockItem(tokens));
+        }
+        return res;
+    }
+
+    private Node parseBlockItem(Vector<Token> tokens) throws Exception {
+
+        if (tokens.elementAt(position).isType()) {
+            Node declarationNode = parseDeclaration(tokens);
+            assertToken(tokens.elementAt(position++), ";");
+            return declarationNode;
+        } else {
+            return parseStatement(tokens);
+        }
     }
 
     private boolean isEqualityToken(Token token) {
