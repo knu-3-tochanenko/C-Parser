@@ -73,6 +73,12 @@ public class Parser {
     private Node parseStatement(Vector<Token> tokens) throws Exception {
         switch (tokens.elementAt(position).content()) {
             case "return":
+                Node returnNode = new Node("return");
+                position++;
+                returnNode.addChild(parseExpression(tokens));
+                assertToken(tokens.elementAt(position), ";");
+                position++;
+                return returnNode;
             case "if":
                 assertToken(tokens.elementAt(position), "if");
                 assertToken(tokens.elementAt(position + 1), "(");
@@ -89,10 +95,72 @@ public class Parser {
 
                 return ifNode;
             case "for":
+                Node forNode = new Node("for");
+                assertToken(tokens.elementAt(position + 1), "(");
+                position += 2;
+
+                //1
+                if (!tokens.elementAt(position).content().equals(";")) {
+                    forNode.addChild(parseDeclaration(tokens));
+                    assertToken(tokens.elementAt(position), ";");
+                    position++;
+                } else {
+                    position++;
+                    forNode.addChild(new Node(noStatement));
+                }
+
+                //2
+                if (!tokens.elementAt(position).content().equals(";")) {
+                    forNode.addChild(parseExpression(tokens));
+                    assertToken(tokens.elementAt(position), ";");
+                    position++;
+                } else {
+                    position++;
+                    forNode.addChild(new Node(noStatement));
+                }
+
+                //3
+                if (!tokens.elementAt(position).content().equals(")")) {
+                    forNode.addChild(parseExpression(tokens));
+                    assertToken(tokens.elementAt(position), ")");
+                    position++;
+                } else {
+                    position++;
+                    forNode.addChild(new Node(noStatement));
+                }
+
+                //4
+                forNode.addChild(parseBlockItem(tokens));
+
+                return forNode;
 
             case "do":
+                position++;
+                Node doWhileNode = new Node("do while");
+                doWhileNode.addChild(parseBlockItem(tokens));
+
+                assertToken(tokens.elementAt(position), "while");
+                assertToken(tokens.elementAt(position + 1), "(");
+                position += 2;
+                doWhileNode.addChild(parseExpression(tokens));
+                assertToken(tokens.elementAt(position), ")");
+                assertToken(tokens.elementAt(position + 1), ";");
+                position += 2;
+
+                return doWhileNode;
 
             case "while":
+                Node whileNode = new Node("while");
+
+                assertToken(tokens.elementAt(position), "while");
+                assertToken(tokens.elementAt(position + 1), "(");
+                position += 2;
+                whileNode.addChild(parseExpression(tokens));
+                assertToken(tokens.elementAt(position), ")");
+                position++;
+                whileNode.addChild(parseBlockItem(tokens));
+
+                return whileNode;
 
             case "{":
                 Node blockNode = new Node("block");
