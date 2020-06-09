@@ -88,9 +88,33 @@ public class Parser {
                 content.equals("<") || content.equals(">");
     }
 
+    private Node parseCompareExpression(Vector<Token> tokens) throws Exception {
+        Node temp = parseAdditiveExpression(tokens);
+        while (isEqualityToken(tokens.elementAt(position))) {
+            Node equalityNode = new Node(tokens.elementAt(position).content());
+            equalityNode.addChild(temp);
+            position++;
+            equalityNode.addChild(parseAdditiveExpression(tokens));
+            return equalityNode;
+        }
+        return temp;
+    }
+
     private boolean isAdditiveToken(Token token) {
         String content = token.content();
         return content.equals("+") || content.equals("-");
+    }
+
+    private Node parseAdditiveExpression(Vector<Token> tokens) throws Exception {
+        Node temp = parseMultiplicativeExpression(tokens);
+        while (isAdditiveToken(tokens.elementAt(position))) {
+            Node equalityNode = new Node(tokens.elementAt(position).content());
+            equalityNode.addChild(temp);
+            position++;
+            equalityNode.addChild(parseMultiplicativeExpression(tokens));
+            return equalityNode;
+        }
+        return temp;
     }
 
     private boolean isMultiplicativeToken(Token token) {
@@ -98,8 +122,30 @@ public class Parser {
         return content.equals("*") || content.equals("/") || content.equals("%");
     }
 
+    private Node parseMultiplicativeExpression(Vector<Token> tokens) throws Exception {
+        Node temp = parseUnaryExpression(tokens);
+        while (isMultiplicativeToken(tokens.elementAt(position))) {
+            Node equalityNode = new Node(tokens.elementAt(position).content());
+            equalityNode.addChild(temp);
+            position++;
+            equalityNode.addChild(parseUnaryExpression(tokens));
+            return equalityNode;
+        }
+        return temp;
+    }
+
     private boolean isUnaryToken(Token token) throws Exception {
         String content = token.content();
         return content.equals("+") || content.equals("-") || content.equals("~") || content.equals("!");
+    }
+
+    private Node parseUnaryExpression(Vector<Token> tokens) throws Exception {
+        if (isUnaryToken(tokens.elementAt(position))) {
+            Node unaryNode = new Node(tokens.elementAt(position).content());
+            position++;
+            unaryNode.addChild(parseCompareExpression(tokens));
+            return unaryNode;
+        }
+        return parseFactor(tokens);
     }
 }
