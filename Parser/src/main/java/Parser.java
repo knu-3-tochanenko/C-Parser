@@ -6,7 +6,7 @@ public class Parser {
 
     private void assertToken(Token token, String s) throws Exception {
         if (!token.content().equals(s))
-            throw new Exception(String.format("%s expected but token %d value is %s", s, position, token.content()));
+            throw new CParserException(String.format("%s expected but token %d value is %s", s, position, token.content()));
     }
 
     Node parse(Vector<Token> tokens) throws Exception {
@@ -23,10 +23,10 @@ public class Parser {
 
     private Node parseFunctionDeclaration(Vector<Token> tokens) throws Exception {
         if (!tokens.get(position).isType()) {
-            throw new Exception("function type expected");
+            throw new CParserException("function type expected");
         }
         if (!tokens.get(position + 1).isIdentifier()) {
-            throw new Exception("function name expected");
+            throw new CParserException("function name expected");
         }
         assertToken(tokens.get(position++), "int");
         assertToken(tokens.get(position++), "main");
@@ -54,9 +54,9 @@ public class Parser {
 
     private Node parseDeclaration(Vector<Token> tokens) throws Exception {
         if (!tokens.elementAt(position).isType())
-            throw new Exception("type expected");
+            throw new CParserException("type expected");
         if (!tokens.elementAt(position + 1).isIdentifier())
-            throw new Exception("identifier expected");
+            throw new CParserException("identifier expected");
 
         Node declarationNode = new Node("declaration");
         declarationNode.addChild(new Node(String.format("variable name: %s", tokens.elementAt(position + 1).content())));
@@ -275,6 +275,6 @@ public class Parser {
         } else if (tokens.elementAt(position).isIdentifier()) {
             return new Node(String.format("id: %s", tokens.elementAt(position++).content()));
         }
-        throw new Exception(String.format("expression expected but got token %d with value %s", position, tokens.elementAt(position).content()));
+        throw new CParserException(String.format("expression expected but got token %d with value %s", position, tokens.elementAt(position).content()));
     }
 }
