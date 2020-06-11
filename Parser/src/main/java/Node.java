@@ -1,8 +1,9 @@
+import java.util.List;
 import java.util.Vector;
 
 public class Node {
-    private String name;
-    private Vector<Node> children;
+    private final String name;
+    private final List<Node> children;
 
     public Node(String name) {
         this.name = name;
@@ -17,7 +18,7 @@ public class Node {
         children.add(child);
     }
 
-    public Vector<Node> getChildren() {
+    public List<Node> getChildren() {
         return children;
     }
 }

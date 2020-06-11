@@ -10,6 +10,8 @@ public class Main {
         Node root;
         try {
             root = parser.parse(tokens);
+            TreeVisualisation treeVisualisation = new TreeVisualisation(root);
+            treeVisualisation.build();
         } catch (Exception e) {
             System.out.println("\n----------------------------------------------");
             System.out.println(e.toString());
@@ -58,7 +60,7 @@ public class Main {
 
         tokens.add(new Token("for"));
         tokens.add(new Token("("));
-        tokens.add(new Token("int",Token.lexemes.TYPE));
+        tokens.add(new Token("int", Token.lexemes.TYPE));
         tokens.add(new Token("i", Token.lexemes.IDENTIFIER));
         tokens.add(new Token("="));
         tokens.add(new Token("0", Token.lexemes.LITERAL));
@@ -128,7 +130,6 @@ public class Main {
         tokens.add(new Token("-"));
         tokens.add(new Token("a", Token.lexemes.IDENTIFIER));
         tokens.add(new Token(";"));
-
 
 
         tokens.add(new Token("return"));
