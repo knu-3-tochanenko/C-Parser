@@ -22,7 +22,7 @@ public class TreeVisualisation {
         graph = mutGraph("Parser tree").setDirected(true);
     }
 
-    void build(String pathName) throws IOException {
+    void build(String fileName) throws IOException {
         if (root == null) {
             return;
         }
@@ -50,6 +50,6 @@ public class TreeVisualisation {
             }
         }
 
-        Graphviz.fromGraph(graph).render(Format.PNG).toFile(new File(pathName));
+        Graphviz.fromGraph(graph).render(Format.PNG).toFile(new File("src/main/resources/" + fileName + ".png"));
     }
 }
