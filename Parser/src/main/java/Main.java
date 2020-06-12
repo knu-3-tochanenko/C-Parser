@@ -3,9 +3,9 @@ import java.util.Vector;
 
 public class Main {
     public static void main(String[] args) {
-
         Lexer lexer = new Lexer("text.txt");
         List<Token> tokens = lexer.getTokens();
+        String pathName="src/main/resources/tree";
 
         System.out.println(tokens);
 
@@ -14,7 +14,7 @@ public class Main {
         try {
             root = parser.parse(tokens);
             TreeVisualisation treeVisualisation = new TreeVisualisation(root);
-            treeVisualisation.build();
+            treeVisualisation.build(pathName);
         } catch (Exception e) {
             System.out.println("\n----------------------------------------------");
             System.out.println("c.lang.ParserException: " + e.getMessage());
