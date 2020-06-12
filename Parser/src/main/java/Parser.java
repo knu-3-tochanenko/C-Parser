@@ -1,4 +1,4 @@
-import java.util.Vector;
+import java.util.List;
 
 public class Parser {
     int position = 0;
@@ -9,11 +9,11 @@ public class Parser {
             throw new CParserException(String.format("%s expected but token %d value is %s", s, position, token.content()));
     }
 
-    Node parse(Vector<Token> tokens) throws Exception {
+    Node parse(List<Token> tokens) throws Exception {
         return parseProgram(tokens);
     }
 
-    private Node parseProgram(Vector<Token> tokens) throws Exception {
+    private Node parseProgram(List<Token> tokens) throws Exception {
         Node res = new Node("program");
         while (position < tokens.size()) {
             res.addChild(parseFunctionDeclaration(tokens));
@@ -21,7 +21,7 @@ public class Parser {
         return res;
     }
 
-    private Node parseFunctionDeclaration(Vector<Token> tokens) throws Exception {
+    private Node parseFunctionDeclaration(List<Token> tokens) throws Exception {
         if (!tokens.get(position).isType()) {
             throw new CParserException("function type expected");
         }
@@ -34,33 +34,33 @@ public class Parser {
         assertToken(tokens.get(position++), ")");
         assertToken(tokens.get(position++), "{");
         Node res = new Node("main function");
-        while (!tokens.elementAt(position).content().equals("}")) {
+        while (!tokens.get(position).content().equals("}")) {
             res.addChild(parseBlockItem(tokens));
         }
-        assertToken(tokens.elementAt(position++), "}");
+        assertToken(tokens.get(position++), "}");
         return res;
     }
 
-    private Node parseBlockItem(Vector<Token> tokens) throws Exception {
+    private Node parseBlockItem(List<Token> tokens) throws Exception {
 
-        if (tokens.elementAt(position).isType()) {
+        if (tokens.get(position).isType()) {
             Node declarationNode = parseDeclaration(tokens);
-            assertToken(tokens.elementAt(position++), ";");
+            assertToken(tokens.get(position++), ";");
             return declarationNode;
         } else {
             return parseStatement(tokens);
         }
     }
 
-    private Node parseDeclaration(Vector<Token> tokens) throws Exception {
-        if (!tokens.elementAt(position).isType())
+    private Node parseDeclaration(List<Token> tokens) throws Exception {
+        if (!tokens.get(position).isType())
             throw new CParserException("type expected");
-        if (!tokens.elementAt(position + 1).isIdentifier())
+        if (!tokens.get(position + 1).isIdentifier())
             throw new CParserException("identifier expected");
 
         Node declarationNode = new Node("declaration");
-        declarationNode.addChild(new Node(String.format("variable name: %s", tokens.elementAt(position + 1).content())));
-        if (tokens.elementAt(position + 2).content().equals("=")) {
+        declarationNode.addChild(new Node(String.format("variable name: %s", tokens.get(position + 1).content())));
+        if (tokens.get(position + 2).content().equals("=")) {
             position += 3;
             declarationNode.addChild(parseExpression(tokens));
         } else {
@@ -70,25 +70,25 @@ public class Parser {
         return declarationNode;
     }
 
-    private Node parseStatement(Vector<Token> tokens) throws Exception {
-        switch (tokens.elementAt(position).content()) {
+    private Node parseStatement(List<Token> tokens) throws Exception {
+        switch (tokens.get(position).content()) {
             case "return":
                 Node returnNode = new Node("return");
                 position++;
                 returnNode.addChild(parseExpression(tokens));
-                assertToken(tokens.elementAt(position), ";");
+                assertToken(tokens.get(position), ";");
                 position++;
                 return returnNode;
             case "if":
-                assertToken(tokens.elementAt(position), "if");
-                assertToken(tokens.elementAt(position + 1), "(");
+                assertToken(tokens.get(position), "if");
+                assertToken(tokens.get(position + 1), "(");
                 position += 2;
                 Node ifNode = new Node("if");
                 ifNode.addChild(parseExpression(tokens));
-                assertToken(tokens.elementAt(position), ")");
+                assertToken(tokens.get(position), ")");
                 position++;
                 ifNode.addChild(parseStatement(tokens));
-                if (tokens.elementAt(position).content().equals("else")) {
+                if (tokens.get(position).content().equals("else")) {
                     position++;
                     ifNode.addChild(parseStatement(tokens));
                 }
@@ -96,13 +96,13 @@ public class Parser {
                 return ifNode;
             case "for":
                 Node forNode = new Node("for");
-                assertToken(tokens.elementAt(position + 1), "(");
+                assertToken(tokens.get(position + 1), "(");
                 position += 2;
 
                 //1
-                if (!tokens.elementAt(position).content().equals(";")) {
+                if (!tokens.get(position).content().equals(";")) {
                     forNode.addChild(parseDeclaration(tokens));
-                    assertToken(tokens.elementAt(position), ";");
+                    assertToken(tokens.get(position), ";");
                     position++;
                 } else {
                     position++;
@@ -110,9 +110,9 @@ public class Parser {
                 }
 
                 //2
-                if (!tokens.elementAt(position).content().equals(";")) {
+                if (!tokens.get(position).content().equals(";")) {
                     forNode.addChild(parseExpression(tokens));
-                    assertToken(tokens.elementAt(position), ";");
+                    assertToken(tokens.get(position), ";");
                     position++;
                 } else {
                     position++;
@@ -120,9 +120,9 @@ public class Parser {
                 }
 
                 //3
-                if (!tokens.elementAt(position).content().equals(")")) {
+                if (!tokens.get(position).content().equals(")")) {
                     forNode.addChild(parseExpression(tokens));
-                    assertToken(tokens.elementAt(position), ")");
+                    assertToken(tokens.get(position), ")");
                     position++;
                 } else {
                     position++;
@@ -139,12 +139,12 @@ public class Parser {
                 Node doWhileNode = new Node("do while");
                 doWhileNode.addChild(parseBlockItem(tokens));
 
-                assertToken(tokens.elementAt(position), "while");
-                assertToken(tokens.elementAt(position + 1), "(");
+                assertToken(tokens.get(position), "while");
+                assertToken(tokens.get(position + 1), "(");
                 position += 2;
                 doWhileNode.addChild(parseExpression(tokens));
-                assertToken(tokens.elementAt(position), ")");
-                assertToken(tokens.elementAt(position + 1), ";");
+                assertToken(tokens.get(position), ")");
+                assertToken(tokens.get(position + 1), ";");
                 position += 2;
 
                 return doWhileNode;
@@ -152,11 +152,11 @@ public class Parser {
             case "while":
                 Node whileNode = new Node("while");
 
-                assertToken(tokens.elementAt(position), "while");
-                assertToken(tokens.elementAt(position + 1), "(");
+                assertToken(tokens.get(position), "while");
+                assertToken(tokens.get(position + 1), "(");
                 position += 2;
                 whileNode.addChild(parseExpression(tokens));
-                assertToken(tokens.elementAt(position), ")");
+                assertToken(tokens.get(position), ")");
                 position++;
                 whileNode.addChild(parseBlockItem(tokens));
 
@@ -165,10 +165,10 @@ public class Parser {
             case "{":
                 Node blockNode = new Node("block");
                 position++;
-                while (!tokens.elementAt(position).content().equals("}")) {
+                while (!tokens.get(position).content().equals("}")) {
                     blockNode.addChild(parseBlockItem(tokens));
                 }
-                assertToken(tokens.elementAt(position), "}");
+                assertToken(tokens.get(position), "}");
                 position++;
                 return blockNode;
 
@@ -177,16 +177,16 @@ public class Parser {
 
             default:
                 Node temp = parseExpression(tokens);
-                assertToken(tokens.elementAt(position), ";");
+                assertToken(tokens.get(position), ";");
                 position++;
                 return temp;
         }
     }
 
-    private Node parseExpression(Vector<Token> tokens) throws Exception {
-        if (tokens.elementAt(position).isIdentifier() && tokens.elementAt(position + 1).content().equals("=")) {
+    private Node parseExpression(List<Token> tokens) throws Exception {
+        if (tokens.get(position).isIdentifier() && tokens.get(position + 1).content().equals("=")) {
             Node assignmentNode = new Node("=");
-            assignmentNode.addChild(new Node(String.format("id: %s", tokens.elementAt(position).content())));
+            assignmentNode.addChild(new Node(String.format("id: %s", tokens.get(position).content())));
             position += 2;
             assignmentNode.addChild(parseExpression(tokens));
             return assignmentNode;
@@ -201,10 +201,10 @@ public class Parser {
                 content.equals("<") || content.equals(">");
     }
 
-    private Node parseCompareExpression(Vector<Token> tokens) throws Exception {
+    private Node parseCompareExpression(List<Token> tokens) throws Exception {
         Node temp = parseAdditiveExpression(tokens);
-        while (isEqualityToken(tokens.elementAt(position))) {
-            Node equalityNode = new Node(tokens.elementAt(position).content());
+        while (isEqualityToken(tokens.get(position))) {
+            Node equalityNode = new Node(tokens.get(position).content());
             equalityNode.addChild(temp);
             position++;
             equalityNode.addChild(parseAdditiveExpression(tokens));
@@ -218,10 +218,10 @@ public class Parser {
         return content.equals("+") || content.equals("-");
     }
 
-    private Node parseAdditiveExpression(Vector<Token> tokens) throws Exception {
+    private Node parseAdditiveExpression(List<Token> tokens) throws Exception {
         Node temp = parseMultiplicativeExpression(tokens);
-        while (isAdditiveToken(tokens.elementAt(position))) {
-            Node equalityNode = new Node(tokens.elementAt(position).content());
+        while (isAdditiveToken(tokens.get(position))) {
+            Node equalityNode = new Node(tokens.get(position).content());
             equalityNode.addChild(temp);
             position++;
             equalityNode.addChild(parseMultiplicativeExpression(tokens));
@@ -235,10 +235,10 @@ public class Parser {
         return content.equals("*") || content.equals("/") || content.equals("%");
     }
 
-    private Node parseMultiplicativeExpression(Vector<Token> tokens) throws Exception {
+    private Node parseMultiplicativeExpression(List<Token> tokens) throws Exception {
         Node temp = parseUnaryExpression(tokens);
-        while (isMultiplicativeToken(tokens.elementAt(position))) {
-            Node equalityNode = new Node(tokens.elementAt(position).content());
+        while (isMultiplicativeToken(tokens.get(position))) {
+            Node equalityNode = new Node(tokens.get(position).content());
             equalityNode.addChild(temp);
             position++;
             equalityNode.addChild(parseUnaryExpression(tokens));
@@ -252,9 +252,9 @@ public class Parser {
         return content.equals("+") || content.equals("-") || content.equals("~") || content.equals("!");
     }
 
-    private Node parseUnaryExpression(Vector<Token> tokens) throws Exception {
-        if (isUnaryToken(tokens.elementAt(position))) {
-            Node unaryNode = new Node(tokens.elementAt(position).content());
+    private Node parseUnaryExpression(List<Token> tokens) throws Exception {
+        if (isUnaryToken(tokens.get(position))) {
+            Node unaryNode = new Node(tokens.get(position).content());
             position++;
             unaryNode.addChild(parseCompareExpression(tokens));
             return unaryNode;
@@ -262,19 +262,19 @@ public class Parser {
         return parseFactor(tokens);
     }
 
-    private Node parseFactor(Vector<Token> tokens) throws Exception {
-        if (tokens.elementAt(position).content().equals("(")) {
+    private Node parseFactor(List<Token> tokens) throws Exception {
+        if (tokens.get(position).content().equals("(")) {
             position++;
             Node bracketsNode = new Node("brackets");
             bracketsNode.addChild(parseExpression(tokens));
-            assertToken(tokens.elementAt(position), ")");
+            assertToken(tokens.get(position), ")");
             position++;
             return bracketsNode;
-        } else if (tokens.elementAt(position).isLiteral()) {
-            return new Node(String.format("literal: %s", tokens.elementAt(position++).content()));
-        } else if (tokens.elementAt(position).isIdentifier()) {
-            return new Node(String.format("id: %s", tokens.elementAt(position++).content()));
+        } else if (tokens.get(position).isLiteral()) {
+            return new Node(String.format("literal: %s", tokens.get(position++).content()));
+        } else if (tokens.get(position).isIdentifier()) {
+            return new Node(String.format("id: %s", tokens.get(position++).content()));
         }
-        throw new CParserException(String.format("expression expected but got token %d with value %s", position, tokens.elementAt(position).content()));
+        throw new CParserException(String.format("expression expected but got token %d with value %s", position, tokens.get(position).content()));
     }
 }

@@ -30,4 +30,9 @@ public class Token {
     public boolean isLiteral() {
         return lexeme == lexemes.LITERAL;
     }
+
+    @Override
+    public String toString() {
+        return stringContent + (lexeme == null ? "" : " : " + lexeme.name()) + "\n";
+    }
 }

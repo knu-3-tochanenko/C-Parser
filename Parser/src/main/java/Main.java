@@ -1,10 +1,14 @@
+import java.util.Arrays;
+import java.util.List;
 import java.util.Vector;
 
 public class Main {
     public static void main(String[] args) {
-        Vector<Token> tokens = new Vector<>();
 
-        fillTokens(tokens);
+        DownloadedLexer lexer = new DownloadedLexer();
+        List<Token> tokens = lexer.getTokens();
+
+        System.out.println(tokens);
 
         Parser parser = new Parser();
         Node root;
