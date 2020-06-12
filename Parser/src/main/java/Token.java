@@ -33,6 +33,6 @@ public class Token {
 
     @Override
     public String toString() {
-        return stringContent + (lexeme == null ? "" : " : " + lexeme.name()) + "\n";
+        return "\n" + stringContent + (lexeme == null ? "" : " : " + lexeme.name());
     }
 }
