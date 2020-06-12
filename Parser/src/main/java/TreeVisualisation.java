@@ -51,6 +51,6 @@ public class TreeVisualisation {
             }
         }
 
-        Graphviz.fromGraph(graph).render(Format.PNG).toFile(new File("tree"));
+        Graphviz.fromGraph(graph).render(Format.PNG).toFile(new File("src/main/resources/" + "tree"));
     }
 }
