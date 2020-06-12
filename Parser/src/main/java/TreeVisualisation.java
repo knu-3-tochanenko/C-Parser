@@ -36,7 +36,6 @@ public class TreeVisualisation {
 
         while (!queue.isEmpty()) {
             current = queue.remove();
-            System.out.println(current);
 
             if (current == null && queue.isEmpty()) {
                 queue.add(null);
