@@ -10,7 +10,6 @@ import java.util.regex.Pattern;
  * It DOES NOT identify DOUBLE, FLOAT, BOOLEAN, STRING and CHAR literals.
  * It identifies ONLY INT type and INT and LONG literals.
  * It parses ONLY main function.
- * You MUST place whitespaces between each token. Even -1 should be - 1.
  */
 
 public class Lexer {
@@ -37,7 +36,7 @@ public class Lexer {
     }
 
     public void readTokens() throws IOException {
-        string = Files.readString(Path.of("src/main/resources/" + fileName));
+        string = Files.readString(Path.of("src/main/resources/" + fileName + ".c"));
         System.out.println(string);
     }
 
