@@ -18,7 +18,6 @@ public class Lexer {
     private final List<Character> operators = List.of('=', '!', '<', '>', '*', '-', '%', '/', '+');
     private final List<String> types = List.of("int", "long");
     private String fileName;
-    private List<String> rawTokens = null;
     private String string;
     private int i = 0;
     private List<Token> tokens = new ArrayList<>();
@@ -44,7 +43,6 @@ public class Lexer {
 
     private void tokenize() {
         StringBuilder lexeme = new StringBuilder();
-        System.out.println(string.length());
         while (i < string.length()) {
 
             // Operator
